@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.converter.json.JacksonObjectMapperFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -40,6 +42,14 @@ public class ScheduleTestApplicationConfigWithJPA {
 	protected ApplicationContext applicationContext;
 
 	private static final String PACKAGE_TO_SCAN = "com.smoopay.sts.entity";
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		JacksonObjectMapperFactoryBean factory = new JacksonObjectMapperFactoryBean();
+		factory.afterPropertiesSet();
+		ObjectMapper mapper = factory.getObject();
+		return mapper;
+	}
 
 	@Bean
 	public DataSource dataSource() {

@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.http.converter.json.JacksonObjectMapperFactoryBean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -38,6 +40,14 @@ public class ScheduleTestApplicationConfig {
 
 	@Autowired
 	protected ApplicationContext applicationContext;
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		JacksonObjectMapperFactoryBean factory = new JacksonObjectMapperFactoryBean();
+		factory.afterPropertiesSet();
+		ObjectMapper mapper = factory.getObject();
+		return mapper;
+	}
 
 	@Bean
 	public JobDetailFactoryBean jobDetailFactoryBean() throws Exception {

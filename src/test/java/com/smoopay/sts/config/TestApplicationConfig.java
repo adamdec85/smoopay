@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.converter.json.JacksonObjectMapperFactoryBean;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -62,6 +64,14 @@ public class TestApplicationConfig {
 	}
 
 	@Bean
+	public ObjectMapper objectMapper() {
+		JacksonObjectMapperFactoryBean factory = new JacksonObjectMapperFactoryBean();
+		factory.afterPropertiesSet();
+		ObjectMapper mapper = factory.getObject();
+		return mapper;
+	}
+
+	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.HSQL);
@@ -79,11 +89,11 @@ public class TestApplicationConfig {
 		properties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory");
 		properties.setProperty("hibernate.cache.use_query_cache", "true");
 		properties.setProperty("hibernate.generate_statistics", "true");
-		
+
 		// For Hibernate Evers
 		properties.setProperty("org.hibernate.envers.auditTablePrefix", "");
 		properties.setProperty("org.hibernate.envers.auditTableSuffix", "_History");
-		
+
 		properties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
 		factory.setJpaProperties(properties);
 

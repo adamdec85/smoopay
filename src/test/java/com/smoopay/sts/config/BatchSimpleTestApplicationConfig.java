@@ -2,6 +2,7 @@ package com.smoopay.sts.config;
 
 import javax.sql.DataSource;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.converter.json.JacksonObjectMapperFactoryBean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -39,6 +41,14 @@ public class BatchSimpleTestApplicationConfig {
 
 	@Autowired
 	private StepBuilderFactory steps;
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		JacksonObjectMapperFactoryBean factory = new JacksonObjectMapperFactoryBean();
+		factory.afterPropertiesSet();
+		ObjectMapper mapper = factory.getObject();
+		return mapper;
+	}
 
 	@Bean
 	public DataSource dataSource() {

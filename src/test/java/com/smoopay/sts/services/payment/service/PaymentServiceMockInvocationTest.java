@@ -3,6 +3,7 @@ package com.smoopay.sts.services.payment.service;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +27,6 @@ import com.smoopay.sts.services.payment.pos.request.NewPaymentRequest_1_0;
 import com.smoopay.sts.services.payment.pos.response.AmendPaymentResponse_1_0;
 import com.smoopay.sts.services.payment.pos.response.CancelPaymentResponse_1_0;
 import com.smoopay.sts.services.payment.pos.response.NewPaymentResponse_1_0;
-import com.smoopay.sts.utils.JsonUtils;
 
 /**
  * http ://java-success.blogspot.com/2012/12/unit-testing-spring-mvc-controllers
@@ -46,20 +46,20 @@ public class PaymentServiceMockInvocationTest {
 	private CancelPaymentResponse_1_0 cancelResponse;
 	private AmendPaymentResponse_1_0 amendResposne;
 
-	private JsonUtils jsonUtils;
+	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
 		posPaymentService = new PosPaymentService();
 		MockitoAnnotations.initMocks(this);
-		jsonUtils = new JsonUtils();
+		mapper = new ObjectMapper();
 	}
 
 	@Test
 	public void shouldInvokeNewPayment() throws Exception {
 		// given
 		NewPaymentRequest_1_0 request = new NewPaymentRequest_1_0(1L, 1L, new BigDecimal("100.0"), CurrencyEnum.PLN, new Date());
-		byte[] content = jsonUtils.convertObjectToBytes(request);
+		byte[] content = mapper.writeValueAsBytes(request);
 
 		newResponse = new NewPaymentResponse_1_0(1L, new BigDecimal("100.0"), CurrencyEnum.PLN);
 		Mockito.reset(paymentCustomRepository);
@@ -69,7 +69,8 @@ public class PaymentServiceMockInvocationTest {
 
 		// when
 		ResultActions perform = builder.build().perform(
-				MockMvcRequestBuilders.post("/payment/v1/new", "json").content(content).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+				MockMvcRequestBuilders.post("/payment/v1/new", "json").content(content).contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
 
 		// than
 		Mockito.verify(paymentCustomRepository, Mockito.times(1)).createOrAddNewPayment((NewPaymentRequest_1_0) Mockito.any());
@@ -86,11 +87,15 @@ public class PaymentServiceMockInvocationTest {
 		// given
 		NewPaymentRequest_1_0 request = new NewPaymentRequest_1_0();
 		request.setMerchantId(1L);
-		byte[] content = jsonUtils.convertObjectToBytes(request);
+		byte[] content = mapper.writeValueAsBytes(request);
 
 		// when
-		ResultActions perform = MockMvcBuilders.standaloneSetup(posPaymentService).build()
-				.perform(MockMvcRequestBuilders.post("/payment/v1/new", "json").content(content).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+		ResultActions perform = MockMvcBuilders
+				.standaloneSetup(posPaymentService)
+				.build()
+				.perform(
+						MockMvcRequestBuilders.post("/payment/v1/new", "json").content(content).contentType(MediaType.APPLICATION_JSON)
+								.accept(MediaType.APPLICATION_JSON));
 
 		// than
 		perform.andExpect(MockMvcResultMatchers.status().isOk());
@@ -123,15 +128,19 @@ public class PaymentServiceMockInvocationTest {
 	public void shouldInvokeCancelPayment() throws Exception {
 		// given
 		CancelPaymentRequest_1_0 request = new CancelPaymentRequest_1_0(1L);
-		byte[] content = jsonUtils.convertObjectToBytes(request);
+		byte[] content = mapper.writeValueAsBytes(request);
 
 		cancelResponse = new CancelPaymentResponse_1_0(1L, new BigDecimal("100.0"), CurrencyEnum.PLN, PaymentStatusEnum.CANCELED);
 		Mockito.reset(paymentCustomRepository);
 		Mockito.when(paymentCustomRepository.cancelPayment((CancelPaymentRequest_1_0) Mockito.any())).thenReturn(cancelResponse);
 
 		// when
-		ResultActions perform = MockMvcBuilders.standaloneSetup(posPaymentService).build()
-				.perform(MockMvcRequestBuilders.post("/payment/v1/cancel", "json").content(content).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+		ResultActions perform = MockMvcBuilders
+				.standaloneSetup(posPaymentService)
+				.build()
+				.perform(
+						MockMvcRequestBuilders.post("/payment/v1/cancel", "json").content(content).contentType(MediaType.APPLICATION_JSON)
+								.accept(MediaType.APPLICATION_JSON));
 
 		// than
 		perform.andExpect(MockMvcResultMatchers.status().isOk());
@@ -146,15 +155,19 @@ public class PaymentServiceMockInvocationTest {
 	public void shouldInvokeAmendPayment() throws Exception {
 		// given
 		AmendPaymentRequest_1_0 request = new AmendPaymentRequest_1_0(1L, 1L, 1L, new BigDecimal("30.0"), CurrencyEnum.USD);
-		byte[] content = jsonUtils.convertObjectToBytes(request);
+		byte[] content = mapper.writeValueAsBytes(request);
 
 		amendResposne = new AmendPaymentResponse_1_0(5L, new BigDecimal("30.0"), CurrencyEnum.USD);
 		Mockito.reset(paymentCustomRepository);
 		Mockito.when(paymentCustomRepository.amendPayment((AmendPaymentRequest_1_0) Mockito.any())).thenReturn(amendResposne);
 
 		// when
-		ResultActions perform = MockMvcBuilders.standaloneSetup(posPaymentService).build()
-				.perform(MockMvcRequestBuilders.post("/payment/v1/amend", "json").content(content).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+		ResultActions perform = MockMvcBuilders
+				.standaloneSetup(posPaymentService)
+				.build()
+				.perform(
+						MockMvcRequestBuilders.post("/payment/v1/amend", "json").content(content).contentType(MediaType.APPLICATION_JSON)
+								.accept(MediaType.APPLICATION_JSON));
 
 		// than
 		perform.andExpect(MockMvcResultMatchers.status().isOk());
