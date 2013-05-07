@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<bean id="aggregateJob"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="com.smoopay.sts.schedule.jobs.BanksQuartzJob" />
+		<property name="durability" value="true" />
+	</bean>
+
+	<bean id="cronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="aggregateJob" />
+		<!-- run every morning at 5 AM -->
+		<property name="cronExpression" value="0 0 5 * * ?" />
+	</bean>
+
+	<bean id="simpleTrigger"
+		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="aggregateJob" />
+		<property name="startDelay" value="3000" />
+		<property name="repeatInterval" value="10000" />
+	</bean>
+
+	<bean id="jobFactory" class="com.smoopay.sts.schedule.AutowiringSpringBeanJobFactory" />
+
+	<beans profile="dev">
+		<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+			<property name="dataSource" ref="dataSource" />
+			<property name="transactionManager" ref="transactionManager" />
+			<property name="autoStartup" value="true" />
+			<property name="waitForJobsToCompleteOnShutdown" value="true" />
+			<property name="applicationContextSchedulerContextKey"
+				value="applicationContext" />
+			<property name="quartzProperties">
+				<util:properties id="quartzConfiguration"
+					location="classpath:properties/quartz/quartz_postgres.properties" />
+			</property>
+			<property name="jobFactory" ref="jobFactory" />
+			<property name="triggers">
+				<list>
+					<ref bean="simpleTrigger" />
+					<ref bean="cronTrigger" />
+				</list>
+			</property>
+		</bean>
+	</beans>
+
+	<beans profile="unit-tests">
+		<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+			<property name="dataSource" ref="dataSource" />
+			<property name="transactionManager" ref="transactionManager" />
+			<property name="autoStartup" value="false" />
+			<property name="waitForJobsToCompleteOnShutdown" value="false" />
+			<property name="applicationContextSchedulerContextKey"
+				value="applicationContext" />
+			<property name="quartzProperties">
+				<util:properties id="quartzConfiguration"
+					location="classpath:properties/quartz/quartz_hsqldb.properties" />
+			</property>
+			<property name="jobFactory" ref="jobFactory" />
+			<property name="triggers">
+				<list>
+					<ref bean="simpleTrigger" />
+					<ref bean="cronTrigger" />
+				</list>
+			</property>
+		</bean>
+	</beans>
+
+</beans>

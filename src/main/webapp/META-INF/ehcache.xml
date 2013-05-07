@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ehcache xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	xsi:noNamespaceSchemaLocation='http://ehcache.org/ehcache.xsd'>
+
+	<defaultCache eternal='true' maxElementsInMemory='100'
+		overflowToDisk='false' />
+		
+	<cache name="com.smoopay.sts.entity.bank.BankRegistry"
+		maxElementsInMemory="2000" eternal="false" timeToIdleSeconds="1800"
+		timeToLiveSeconds="3600" overflowToDisk="false" />
+</ehcache>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ehcache xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	xsi:noNamespaceSchemaLocation='http://ehcache.org/ehcache.xsd'
+	updateCheck="false" monitoring="on" dynamicConfig="false">
+
+	<diskStore path="./hibernate_l2cache" />
+
+	<defaultCache maxElementsInMemory="10000" eternal="true"
+		overflowToDisk="true" diskPersistent="true"
+		diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="FIFO" />
+
+	<cache name="org.hibernate.cache.StandardQueryCache"
+		maxEntriesLocalHeap="5" eternal="false" timeToLiveSeconds="120"
+		overflowToDisk="true" />
+
+	<cache name="org.hibernate.cache.UpdateTimestampsCache"
+		maxEntriesLocalHeap="5000" eternal="true" overflowToDisk="true" />
+
+	<cache name="com.smoopay.sts.entity.bank.BankRegistry" eternal="true"
+		maxElementsInMemory="40" overflowToDisk="false"
+		memoryStoreEvictionPolicy="LFU" statistics="true" />
+
+</ehcache>

@@ -1,0 +1,1 @@
+﻿select * from clientaccount left join client on clientaccount.client_id = client.id where clientaccount.currency = 'CHF'

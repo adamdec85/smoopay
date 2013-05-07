@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<int:annotation-config />
+	<context:component-scan base-package="com.smoopay.sts.integration" />
+
+	<int:channel id="ackPaymentRequest" />
+	<int:channel id="ackPaymentResponse" />
+
+	<int:channel id="ackPaymentHistory">
+		<int:dispatcher task-executor="ackPaymentHistoryExecutor" />
+	</int:channel>
+
+	<task:executor id="ackPaymentHistoryExecutor" pool-size="20" />
+
+	<int:logging-channel-adapter id="errorLogger"
+		level="ERROR" />
+
+	<int:gateway id="paymentAckClientGateway"
+		service-interface="com.smoopay.sts.integration.payment.gateway.IPaymentAckClientGateway"
+		default-request-channel="ackPaymentRequest" default-reply-channel="ackPaymentResponse"
+		error-channel="errorLogger" />
+
+	<int:service-activator ref="paymentAckClientValidator"
+		input-channel="ackPaymentRequest" output-channel="ackPaymentResponse"
+		method="validateClientAckPayment" requires-reply="true" />
+
+	<int:gateway id="paymentAckClientHistoryGateway"
+		service-interface="com.smoopay.sts.integration.payment.gateway.IPaymentAckClientGatewayHistory"
+		default-request-channel="ackPaymentHistory" error-channel="errorLogger" />
+
+	<int:service-activator ref="paymentAckClientHistory"
+		input-channel="ackPaymentHistory" method="saveClientAckPayment"
+		requires-reply="false" />
+
+</beans>

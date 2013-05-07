@@ -1,0 +1,6 @@
+DROP TABLE  Merchant IF EXISTS;
+DROP TABLE  MerchantAddress IF EXISTS;
+DROP TABLE  AccountData IF EXISTS;
+DROP TABLE  FinancialBalance IF EXISTS;
+DROP TABLE  MerchantAccount IF EXISTS;
+DROP TABLE  Payment IF EXISTS;
