@@ -1,6 +1,0 @@
-DROP TABLE  Client IF EXISTS;
-DROP TABLE  ClientAddress IF EXISTS;
-DROP TABLE  ClientAccountData IF EXISTS;
-DROP TABLE  ClientFinancialBalance IF EXISTS;
-DROP TABLE  ClientAccount IF EXISTS;
-DROP TABLE  ClientPayment IF EXISTS;

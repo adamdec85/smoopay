@@ -1,5 +1,0 @@
-DROP TABLE  Bank IF EXISTS;
-DROP TABLE  BankAddress IF EXISTS;
-DROP TABLE  BankAccountData IF EXISTS;
-DROP TABLE  BankFinancialBalance IF EXISTS;
-DROP TABLE  BankAccount IF EXISTS;
