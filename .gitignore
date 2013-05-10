@@ -1,6 +1,0 @@
-target/
-.settings/
-.project
-.classpath
-.springBeans
-/hibernate_l2cache

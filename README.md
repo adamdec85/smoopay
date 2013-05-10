@@ -1,4 +1,0 @@
-smoopay-test
-============
-
-smoopay-test
